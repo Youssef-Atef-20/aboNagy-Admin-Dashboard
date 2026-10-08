@@ -5,11 +5,8 @@ import {
   Eye,
   Calendar,
   User,
-  Code2,
   Clock,
   Layers,
-  ChevronDown,
-  ChevronUp,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { RESTAURANT_ID, PERMISSION_LABELS } from '../lib/constants';
@@ -209,7 +206,6 @@ function AuditDetailsModal({
   performer?: { username: string; role: string } | null;
   onClose: () => void;
 }) {
-  const [showRawJson, setShowRawJson] = useState(false);
 
   if (!log) return null;
 
@@ -368,42 +364,6 @@ function AuditDetailsModal({
                   <span className="font-bold line-through">{diff.oldFormatted}</span>
                 </div>
               ))}
-            </div>
-          )}
-        </div>
-
-        {/* Collapsible Technical JSON Inspection */}
-        <div className="border-t border-[var(--color-border)] pt-3">
-          <button
-            type="button"
-            onClick={() => setShowRawJson((prev) => !prev)}
-            className="flex items-center justify-between w-full text-xs font-semibold text-[var(--color-text-3)] hover:text-[var(--color-text)] transition-colors py-1 cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Code2 size={14} />
-              <span>عرض بيانات JSON التقنية الأصلية</span>
-            </span>
-            {showRawJson ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-
-          {showRawJson && (
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] font-mono">
-              <div>
-                <p className="text-[10px] text-[var(--color-text-3)] mb-1 font-sans font-bold">
-                  OLD DATA:
-                </p>
-                <pre className="p-3 rounded-[var(--radius-md)] bg-[var(--color-surface-2)] text-[var(--color-text-2)] overflow-x-auto max-h-48 border border-[var(--color-border)]">
-                  {log.old_data ? JSON.stringify(log.old_data, null, 2) : 'null'}
-                </pre>
-              </div>
-              <div>
-                <p className="text-[10px] text-[var(--color-text-3)] mb-1 font-sans font-bold">
-                  NEW DATA:
-                </p>
-                <pre className="p-3 rounded-[var(--radius-md)] bg-[var(--color-surface-2)] text-[var(--color-text-2)] overflow-x-auto max-h-48 border border-[var(--color-border)]">
-                  {log.new_data ? JSON.stringify(log.new_data, null, 2) : 'null'}
-                </pre>
-              </div>
             </div>
           )}
         </div>
