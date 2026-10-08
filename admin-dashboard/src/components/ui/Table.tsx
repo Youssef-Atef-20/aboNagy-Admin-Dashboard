@@ -41,9 +41,20 @@ export function Tbody({ children }: { children: ReactNode }) {
   return <tbody className="divide-y divide-[var(--color-border)]">{children}</tbody>;
 }
 
-export function Tr({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function Tr({
+  children,
+  className = '',
+  onClick,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
-    <tr className={`hover:bg-[var(--color-surface-2)] transition-colors duration-150 ${className}`}>
+    <tr
+      onClick={onClick}
+      className={`hover:bg-[var(--color-surface-2)] transition-colors duration-150 ${className}`}
+    >
       {children}
     </tr>
   );

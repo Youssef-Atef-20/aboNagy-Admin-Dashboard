@@ -234,6 +234,23 @@ serve(async (req: Request) => {
         await supabaseAdmin.from("admin_permissions").insert(permRows);
       }
 
+      // Record audit log for admin creation
+      await supabaseAdmin.from("audit_logs").insert({
+        restaurant_id: RESTAURANT_ID,
+        user_id: ownerCheck.user.id,
+        action: "INSERT",
+        entity_type: "restaurant_users",
+        entity_id: newAuthUserId,
+        old_data: null,
+        new_data: {
+          user_id: newAuthUserId,
+          username: cleanUsername,
+          role: "admin",
+          is_active: true,
+          permissions,
+        },
+      });
+
       return jsonResponse({
         success: true,
         user: {
@@ -264,7 +281,7 @@ serve(async (req: Request) => {
       // Find target user in restaurant_users
       const { data: targetRu, error: targetRuError } = await supabaseAdmin
         .from("restaurant_users")
-        .select("user_id")
+        .select("user_id, username")
         .eq("restaurant_id", RESTAURANT_ID)
         .eq("user_id", targetUserId)
         .single();
@@ -283,6 +300,17 @@ serve(async (req: Request) => {
       if (updateError) {
         return jsonResponse({ error: "فشل تغيير كلمة المرور." }, 500);
       }
+
+      // Record audit log for password change (never logging the password itself)
+      await supabaseAdmin.from("audit_logs").insert({
+        restaurant_id: RESTAURANT_ID,
+        user_id: ownerCheck.user.id,
+        action: "UPDATE",
+        entity_type: "restaurant_users",
+        entity_id: targetAuthId,
+        old_data: { username: targetRu.username, event: "تغيير كلمة المرور" },
+        new_data: { username: targetRu.username, event: "تم تغيير كلمة المرور بنجاح" },
+      });
 
       return jsonResponse({ success: true });
     }
